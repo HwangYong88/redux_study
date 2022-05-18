@@ -1,5 +1,9 @@
 const { createStore } = require("redux");
 
+// 컴포넌트 안에서만 혹은 부모자식 관계정도만 스테이트로 해결하면좋고,
+// 그외 3개이상 컴포넌트 쓸거면 리덕스가 편하다.
+//
+
 // 현실적인 예제 : 로그인
 // store파트-------------------------------------------------------------------
 const reducer = (prevState, action) => {
@@ -7,18 +11,17 @@ const reducer = (prevState, action) => {
     case "LOG_IN":
       return {
         ...prevState,
-        user: action.data.name,
+        user: action.data,
       };
     case "LOG_OUT":
       return {
         ...prevState,
-        user: "",
+        user: null,
       };
     case "ADD_POST":
       return {
         ...prevState,
-        user: action.data.id,
-        posts: action.data.content,
+        posts: [...prevState.posts, action.data],
       };
     default:
       return prevState;
@@ -28,6 +31,7 @@ const initialState = {
   user: null,
   posts: [],
 };
+
 const store = createStore(reducer, initialState);
 console.log("1", store.getState());
 
@@ -68,11 +72,20 @@ store.dispatch(
 );
 console.log("2nd", store.getState());
 
+// 게시물1
 store.dispatch(
   addPost({
     userId: 1,
     id: 1,
     content: "hi - redux",
+  })
+);
+// 게시물2
+store.dispatch(
+  addPost({
+    userId: 1,
+    id: 2,
+    content: "second redux",
   })
 );
 console.log("3rd", store.getState());
