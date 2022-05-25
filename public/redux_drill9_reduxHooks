@@ -1,0 +1,99 @@
+리덕스 훅스
+리덕스에서 Hooks 사용하기
+리덕스 스토어와 연동되어있는 컨테이너 컴포넌트를 만들 때 connect 함수를 사용하지 않고
+react-redux에서 제공하는 Hooks를 사용하여 컴포넌트를 만들어 보자
+
+1. useSelector로 상태 조회하기--------------------------------------------------------------------------------------------------------
+ useSelector Hook을 사용하면 connect 함수를 사용할 필요 없이 리덕스의 상태를 조회할 수 있다
+
+예시)
+import { useSelector } from 'react-redux';
+import Counter from '../components/Counter';
+import { increase, decrease } from '../modules/counter';
+const CounterContainer = () => {
+  const number = useSelector((state) => state.counter.number);
+  return (
+    <Counter number={number} />
+  );
+};
+export default CounterContainer;
+
+➡　mapStateToProps와 같은 형태로, CounterContainer에서 connect 함수 대신 useSelector를 사용하여 counter.number 값을 조회하여 Counter 컴포넌트에 props를 넘겨준다 
+connect 함수를 사용하는 것보다 훨씬 간편한 사용방법
+
+2. useDispatch 사용하여 액션 디스패치 하기 --------------------------------------------------------------------------------------------------------
+useDispatch Hook을 사용하면 connect를 사용하지 않고 컴포넌트 내부에서 스토어의 내장 함수인 dispatch를 사용할 수 있게 해 준다 
+import { useDispatch, useSelector } from 'react-redux';
+import Counter from '../components/Counter';
+import { increase, decrease } from '../modules/counter';
+
+const CounterContainer = () => {
+  const number = useSelector((state) => state.counter.number);
+  const dispatch = useDispatch();
+  return (
+    <Counter 
+    number={number}
+    onIncrease={() => dispatch(increase())}
+    onDecrease={() => dispatch(decrease())}
+    />
+  );
+};
+
+export default CounterContainer;
+위 코드 처럼 dispatch 변수에 useDispatch를 연결해주고 Counter 컴포넌트에 props로 넘겨줄 때 onIncrease와 onDecrease를 dispatch하는 props로 만들어준다
+위와 같이 코드를 짜게되면 컴포넌트가 리렌더링될 때마다 onIncrease 함수와 onDecrease 함수가 새롭게 만들어 지고있다
+때문에 컴포넌트의 최적화를 위해 useCallback으로 함수를 감싸주어서 코드를 짜보도록 하자
+
+import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Counter from '../components/Counter';
+import { increase, decrease } from '../modules/counter';
+
+const CounterContainer = () => {
+  const number = useSelector((state) => state.counter.number);
+  const dispatch = useDispatch();
+  const onIncrease = useCallback(() => dispatch(increase()), [dispatch]);
+  const onDecrease = useCallback(() => dispatch(decrease()), [dispatch]);
+  return (
+    <Counter number={number} onIncrease={onIncrease} onDecrease={onDecrease} />
+  );
+};
+
+export default CounterContainer;
+➡　이렇게 useDispatch를 사용할 때는 useCallback을 함께 사용하도록 하는 습관을 들이는 것이 좋다 !
+
+3. connect 함수와 Hooks의 차이점 --------------------------------------------------------------------------------------------------------
+Hook를 사용하여 컨테이너 컴포넌트를 만들 때 꼭 알아두어야할 차이점이 존재한다 
+connect 함수를 사용하여 컨테이너 컴포넌트를 만들었을 경우 부모 컴포넌트가 리렌더링될 때 해당 컨테이너 컴포넌트의 props가 바뀌지 않았다면 리렌더링 방지되어 성능이 최적화 된다.
+하지만 useSelector의 경우 최적화 작업이 자동으로 이루어지지 않기때문에 아래와 같이 React.memo를 컨테이너 컴포넌트에 사용해주어야 한다. ?????이해안감
+
+import React from 'react';
+import { useSelector } from 'react-redux';
+import Todos from '../components/Todos';
+import useActions from '../lib/useActions';
+import { changeInput, insert, toggle, remove } from '../modules/todos';
+
+const TodosContainer = () => {
+ (...)
+};
+export default React.memo(TodosContainer);
+ 
+리액트 프로젝트에서 리덕스를 사용하면 업데이트에 관련된 로직을 리액트 컴포넌트에서 분리시킬 수 있으므로
+유지 보수성이 높은 코드를 작성할 수 있다.
+작은 프로젝트에서 리덕스를 사용하면 오히려 프로젝트의 복잡도가 높아질 수 있지만 규모가 큰 프로젝트에서 사용한다면 상태를 더욱 체계적으로 관리할 수 있다.
+
+4. 컨테이너 & 프레젠테이셔널 컴포넌트--------------------------------------------------------------------------------------------------------
+
+1) 컨테이너 컴포넌트 (Container Components): How things work.
+Action: 어떻게 작동하는지를 담당한다.
+프레젠테이셔널과 컨테이너 컴포넌트를 포함하고 있을 수는 있지만 자체적인 스타일이나 DOM 마크업을 갖고 있지 않다.
+데이터와 다른 컴포넌트에 대한 함수를 제공한다.
+data에 대한 state를 갖고 있으며 다른 프레젠테이셔널 컴포넌트에게 props로 데이터를 전달한다.
+
+2) 프레젠테이셔널 컴포넌트 (Presentational Components): how things look.
+View: 어떻게 보이는지를 담당한다.
+useState, dispatch, useCallback 등을 사용하지 않는다. 다만 자체적인 UI에 대한 state는 가질 수 있다.(data에 대한 state는 제외)
+프레젠테이셔널과 컨테이너 컴포넌트를 포함할 수 있고 자체적인 DOM 마크업과 스타일을 가지고 있다.
+this.props.children을 통해 다른 컴포넌트로부터 props를 넘겨받는다.
+다른 컴포넌트에 대한 의존성이 없다.
+state, 라이프사이클 훅, 성능 최적화가 필요하지 않다면 functional components로 작성된다.

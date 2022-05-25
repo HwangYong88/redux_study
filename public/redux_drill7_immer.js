@@ -15,7 +15,8 @@ export default connect(mapStateToProps, mapDipatchToProps)(app);
 // 고차 컴포넌트는 컴포넌트를 가져와 새 컴포넌트를 반환하는 함수입니다. 즉 컴포넌트를 인자로 받거나 반환하는 함수
 // redux의 connect 또는 realy의 createContainer 등도 고차함수
 
-// useSelector useSelector를 사용한 함수에서 리덕스 스토어의 상태값이 바뀐 경우
+// useSelector
+// useSelector를 사용한 함수에서 리덕스 스토어의 상태값이 바뀐 경우
 // ( 버튼 클릭 등의 이벤트를 통해 액션이 실행되어 상태값이 변경된 경우) 바뀐 스토어의 상태값을 다시 가져와 컴포넌트를 렌더링 시킨다.
 
 // connect 함수는 리액트 앱의 하위 컴포넌트에서 redux store를 접근하는 것을 가능하게 해주는 역할을 한다.

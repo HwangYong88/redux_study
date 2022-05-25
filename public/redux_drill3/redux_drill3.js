@@ -24,7 +24,7 @@ const initialState = {
 // 리덕스의 미들웨어 자리 : 디스패치와 리듀서 사이<중요<인핸서
 // 미들웨어 대표적: redux-thunk , redux-saga
 // 공식사이트 예제 : 로깅하는 미들웨어
-// 미들웨어는 보통 삼단함수(아래와 동일한 의미)
+// 미들웨어는 보통 3단함수(아래와 동일한 의미)
 // function firstMiddleware(store){
 //   return function(next){
 //     return function(action){
