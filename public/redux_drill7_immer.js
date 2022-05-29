@@ -30,7 +30,7 @@ export default connect(mapStateToProps, mapDipatchToProps)(app);
 // ex))) const jsx = ( <Provider store={store}> <BlogMain /> </Provider> );
 
 // 2. connect -----------------------------------------------------------------------------------------
-// 하위 컴포넌트 단에서는 Provider에서 제공하는 store 함수를 connect 함수를 통해서 받아온다.
+// 하위 컴포넌트 단에서는 Provider에서 제공하는 store 함수를 connect 함수를 통해서 받아온다.(contextAPI에서는 useContext)
 // 함수 형식이든 클래스 형식이든 받는 방식은 동일하다.
 // 클래스 형식 컴포넌트를 export 할 때 connect 함수를 사용하고 첫번째 인자에 mapStateToProps 함수를 넣었는데
 // redux store에 있는 값을 컴포넌트에 어떻게 넘겨줄지 세팅하는 작업이다.
