@@ -38,6 +38,7 @@
     ]
   },
   "devDependencies": {
+    "jest": "^28.1.0",
     "redux-devtools-extension": "^2.13.9"
   }
 }
